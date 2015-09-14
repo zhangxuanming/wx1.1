@@ -1,2 +1,1 @@
-# 1pagestory
-独立页面story
+wx1.1 版本测试
