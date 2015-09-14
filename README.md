@@ -1,2 +1,2 @@
-# wx1.1
-wx 1.1
+# 1pagestory
+独立页面story
