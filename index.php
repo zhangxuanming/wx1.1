@@ -1,8 +1,7 @@
 <?php
-require_once "jssdk.php";
-$jssdk = new JSSDK("wx05fe1a08ee8d2a7b", "684bc37baad5b76148c9344275d83682");
-$signPackage = $jssdk->GetSignPackage();
-//var_dump($jssdk->getDebugOutPut());
+//require_once "jssdk.php";
+//$jssdk = new JSSDK("wx05fe1a08ee8d2a7b", "684bc37baad5b76148c9344275d83682");
+//$signPackage = $jssdk->GetSignPackage();
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,7 +22,7 @@ $signPackage = $jssdk->GetSignPackage();
     <![endif]-->
 	<img src="src/img/head.jpg" style="position:absolute;width: 0;height: 0;">
     <script src="js/juicer-min.js"></script>
-    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<!--    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>-->
 
     <!--模板-->
     <script id="pageTpl" type="text/template">
@@ -42,7 +41,7 @@ $signPackage = $jssdk->GetSignPackage();
                             {@if item==""}
                                 <br/>
                             {@else}
-                                <p class="zh-t-white">${item}</p>
+                                <p class="zh-t-white zh-story-text">$${item}</p>
                             {@/if}
                         {@/each}
                     </div>
@@ -100,20 +99,25 @@ $signPackage = $jssdk->GetSignPackage();
 		</div>
 	</div>
 <!--	起始页-->
-    <div class="row page pagestart full zh-hidden zh-yellow">
+    <div class="row page pagestart full zh-hidden zh-yellow" style="background:url(../src/img/yure1/startbg.png);">
 	    <div class="col-xs-12 ps-block">
-		    <h3 class="center-block text-center zh-t-white" style="    float: left;
-    margin-left: 5%;font-size: 1.2em;color: rgba(255, 255, 255, 0.78);">嗨！冒险 之</h3>
-		    <h1 class="center-block text-center zh-t-white" style="float: left;
-    margin-left: 5%;
-    clear: both;margin-top: 5px;">逃离深山</h1>
-		    <h3 class="center-block zh-t-white"style="float: left;text-align: left;
-    margin:5%;font-size: 1.2em;color: rgba(255, 255, 255, 0.78);line-height: 1.5em;">你从酒吧出来已是午夜，夜灯下无人的马路自有其浪漫风味。忽然你觉得脑后一疼……</h3>
+		    <h3 class="center-block text-center zh-t-white"
+		        style="float: left;margin-left: 5%;font-size: 1.2em;color: rgba(255, 255, 255, 0.78);"
+			    >嗨！冒险 之</h3>
+		    <h1 class="center-block text-center zh-t-white"
+		        style="float: left;margin-left: 5%;clear: both;margin-top: 5px;"
+			    >逃离深山</h1>
+		    <h3 class="center-block zh-t-white"
+		        style="float: left;text-align: left;margin:5%;font-size: 1.2em;color: rgba(255, 255, 255, 0.78);line-height: 1.5em;"
+			    >你从酒吧出来已是午夜，夜灯下无人的马路自有其浪漫风味。忽然你觉得脑后一疼……</h3>
 		    <div class="row zh-name-wrap">
 			    <input id="zh-name" class="zh-name" type="text" maxlength="8" value="你的名字?" placeholder="默认嗨客">
 		    </div>
 		    <div class="row">
-			    <button data-from="0" data-to="1" class="col-xs-10 col-xs-offset-1 btn btn-lg zh-btn zh-btn-yellow zh-btnstart"style="font-weight: bold;">开始嗨</button>
+			    <button data-from="0" data-to="1"
+			            class="col-xs-10 col-xs-offset-1 btn btn-lg zh-btn zh-btn-yellow zh-btnstart"
+			            style="font-weight: bold;"
+				    >开始嗨</button>
 		    </div>
 	    </div>
     </div>
@@ -150,6 +154,28 @@ $signPackage = $jssdk->GetSignPackage();
 
 </div>
 
+<!--遮罩层-->
+<div class="zh-overlay-mask">
+	<div id="zh-modal" class="zh-modal zh-item-modal">
+		<div class="zh-modal-top">
+			<div class="row">
+				<div class="col-xs-10">
+					<span class="zh-m-name">宝箱</span>
+				</div>
+				<div class="col-xs-2">
+					<span class="zh-m-img" style="background: url(./src/img/logo1.jpg) center;background-size: cover"></span>
+				</div>
+				<div class="col-xs-12" style="margin-top: 1em">
+					<p class="zh-m-des" ">传说中晋文公用来盛放马桶的箱子传说中晋文公用来盛放马桶的箱子传说中晋文公用来盛放马桶的箱子</p>
+				</div>
+			</div>
+		</div>
+		<div class="zh-modal-bottom" style="margin-top: 2em">
+			<button class="zh-btn zh-btn-yellow btn-block" style="color:azure" data-modal="close">哇！白捡的</button>
+		</div>
+	</div>
+</div>
+
 <!--<script src="js/vue/vue.js"></script>-->
 <script src="js/jquery-2.1.4.min.js"></script>
 <!--配置页面-->
@@ -181,8 +207,10 @@ $signPackage = $jssdk->GetSignPackage();
 	var zhLoadStory = (function(){
 		var me = {};
 		var storyObject = {};
+		var _allItemsList = [];
+		var _config = null;
+
 		var _logicModal = null;
-		var _tplUrl = "";
 		var tpl = $('#pageTpl').html();
 
 		var randerPage = function(data){
@@ -192,13 +220,13 @@ $signPackage = $jssdk->GetSignPackage();
 		function ajaxLoadStory(){
 			var storyTpl = {},
 				summaryTpl = {};
-			$.get(_tplUrl,function(data){
+			$.get(_config.storyTpl,function(data){
 				if(!data){
 					return false
 				}
 				var t = $(data);
 				storyTpl = t.filter("#stories").find("section");
-				summaryTpl = t.filter("#summary");
+				summaryTpl = t.filter("#summary");//暂时没用
 				templateToJson(storyTpl);
 
 				//载入游戏逻辑modal
@@ -208,18 +236,30 @@ $signPackage = $jssdk->GetSignPackage();
 
 		var templateToJson = function(storiesBlock){
 			//template to object
+			var _imgFolder = _config.storyName+'/';
+			var _itemsInStory = [];
 			$.each(storiesBlock,function(i,v){
 				var st = {};
 				var act = [];//actions
 				var d = $(v);
 				st.id = d.attr("id");
-				st.img = d.find("img")? d.find("img").attr("data-img"): null;
+				st.img = d.find("img") ? _imgFolder + d.find("img").attr("data-img"): null;
+
+				//初始化段落
 				var _textLines = d.find('[data-txt=story]').find("p");
 				st.txt = {};
 				$.each(_textLines,function(i,v){
-					var a = $(v).text();
+					//提取item列表
+					var __itemInLine = $(v).get(0).children;
+					if (__itemInLine.length>0){
+						for (var j = 0, n = __itemInLine.length; j<n; j++){
+							_itemsInStory.push(__itemInLine[j].innerHTML);
+						}
+					}
+					var a = $(v).html();
 					st.txt[i] = $.trim(a);
 				});
+				//初始化按钮
 				if (d.find("button")){
 					$.each(d.find("button"),function(i,v){
 						var btn = {};
@@ -234,7 +274,8 @@ $signPackage = $jssdk->GetSignPackage();
 				st.actions = act;
 				storyObject[i] = st;
 			});
-
+			_allItemsList = $.unique(_itemsInStory);
+			console.log(_allItemsList);
 			//模板装载页面
 			var html = '';
 			$.each(storyObject,function(i,v){
@@ -246,11 +287,12 @@ $signPackage = $jssdk->GetSignPackage();
 		me.init = function() {
 			ajaxLoadStory();
 		};
-		me.setTemplate = function(tplUrl){
-			_tplUrl = tplUrl;
-		};
+
 		me.setLogicModal = function(logicModal){
 			_logicModal = logicModal;
+		};
+		me.setConfig = function(config){
+			_config = config;
 		};
 		return me
 	}());
@@ -322,7 +364,6 @@ $signPackage = $jssdk->GetSignPackage();
 		    lastImg=_opt.badgeUrl + decodeURIComponent(lastImg);
 		    var $stamp = $("#lastuserbadge");
 		    TweenMax.set($stamp,{alpha:0});
-//		    $stamp.attr('src',lastImg);
 		    $stamp.css('background-image','url('+lastImg+')');
 		    $("#lastusername").html(lastUser);
 		    $("#lastuserdes").html(lastDes);
@@ -352,6 +393,7 @@ $signPackage = $jssdk->GetSignPackage();
 		    });
 	    };
 
+	    //随机动画
 	    var animationEffect = function(){
 			var e = {};
 		    var seffect = [
@@ -364,6 +406,7 @@ $signPackage = $jssdk->GetSignPackage();
 		    ];
 		    return seffect[Math.floor(Math.random()*seffect.length)];
 	    };
+
         //剧情页面切换动作调用
         var bind_jumpAction = function(){
             $(".container").on({
@@ -384,8 +427,8 @@ $signPackage = $jssdk->GetSignPackage();
                     }
 	                var tl = new TimelineMax();
 	                tl.fromTo(cp,0,{alpha:1},{alpha:0,ease:Strong.easeOut,display:'none'})
-		                .fromTo(np,1,animationEffect(),{alpha:1,scale:1,x:0,y:0,rotationX:0,rotationY:0,ease:Strong.easeOut,display:'block'});
-//	                    .fromTo(np,1,{alpha:0,scale:1.3},{alpha:1,scale:1,ease:Strong.easeOut,display:'block'});
+		                .fromTo(np,1,animationEffect(),
+		                {alpha:1,scale:1,x:0,y:0,rotationX:0,rotationY:0,ease:Strong.easeOut,display:'block'});
                 }
             },".zh-sbtn");
         };
@@ -433,6 +476,7 @@ $signPackage = $jssdk->GetSignPackage();
 		    },'.zh-showoptbtn');
 	    };
 
+	    //取得用户名
 	    var binding_getUserName = function(){
 		    var $nameTxt = $("#zh-name");
 		    var _u = "";
@@ -446,12 +490,54 @@ $signPackage = $jssdk->GetSignPackage();
 		    });
 	    };
 
+	    //拾取宝物
+	    var binding_itemOnClick = function(){
+		    $(document).on({
+			    click:function(e){
+				    zhItemDialog.open({name:$(this).html(),des:"睡觉啦啦啦啦"});
+			    }
+		    },'.zh-story-text a');
+	    };
+		//物品对话框
+	    var zhItemDialog = (function(){
+			var me =  {};
+		    var  _$modal    = $('.zh-overlay-mask')
+			    ,_$itemName = $('.zh-m-name')
+			    ,_$itemImg  = $('.zh-m-img')
+			    ,_$itemDes  = $('.zh-m-des');
+
+		    me.open  = function(data){
+			    var _item = data;
+			    if (!_item.name) {
+				    return false
+			    }
+			    _$itemName.html(_item.name);
+			    _$itemDes.html(_item.des);
+			    if (_item.img) { }//设定图片 暂时没用
+			    _$modal.fadeIn(200);
+		    };
+
+		    me.close = function(callback){
+			    var _callback = callback || false;
+			    _$modal.fadeOut(200,_callback);
+		    };
+		    return me;
+	    }());
+
+	    //关闭模板层
+	    var binding_pl_closeModal = function(){
+		    $("[data-modal=close]").click(function(){
+			    zhItemDialog.close();
+		    });
+	    };
+
 	    me.goPage = function(pageIndex,animation){
 		    var $pages = $(_opt.page);
 		    var $goPage = $(_opt.page+pageIndex);
 		    $pages.hide();
 		    $goPage.show();
 	    };
+
 
         //重玩
         me.restart = function(){
@@ -470,12 +556,13 @@ $signPackage = $jssdk->GetSignPackage();
 	        bind_jumpAction();
 	        binding_getUserName();
 	        binding_showAction();
+	        binding_itemOnClick();
+	        binding_pl_closeModal();
         };
         return me;
     }());
 
     $(document).ready(function(){
-	    var sig = "http://wxapi.wordhi.com/ticket?url="+ encodeURIComponent(window.location.href.split('#')[0]);
 	    var myconfig = function(opt){
 		    opt = opt ? opt : {};
 		    var me = {};
@@ -490,34 +577,23 @@ $signPackage = $jssdk->GetSignPackage();
 		    }
 		    return me;
 	    };
-//	    $.getJSON(sig,function(data){
-//		    wx.config({
-//			    debug: true,
-//			    appId: data.appID,
-//			    timestamp: data.timestamp,
-//			    nonceStr: data.nonceStr,
-//			    signature: data.signature,
-//			    jsApiList: [
-//				    'onMenuShareTimeline',
-//				    'onMenuShareAppMessage',
-//				    'onMenuShareQQ',
-//				    'onMenuShareWeibo'
-//			    ]
-//		    });
+
+
+
+	    return;
+//	    wx.config({
+//		    debug: true,
+//		    appId: '<?php //echo $signPackage["appId"];?>//',
+//		    timestamp: <?php //echo $signPackage["timestamp"];?>//,
+//		    nonceStr: '<?php //echo $signPackage["nonceStr"];?>//',
+//		    signature: '<?php //echo $signPackage["signature"];?>//',
+//		    jsApiList: [
+//			    'onMenuShareTimeline',
+//			    'onMenuShareAppMessage',
+//			    'onMenuShareQQ',
+//			    'onMenuShareWeibo'
+//		    ]
 //	    });
-	    wx.config({
-		    debug: true,
-		    appId: '<?php echo $signPackage["appId"];?>',
-		    timestamp: <?php echo $signPackage["timestamp"];?>,
-		    nonceStr: '<?php echo $signPackage["nonceStr"];?>',
-		    signature: '<?php echo $signPackage["signature"];?>',
-		    jsApiList: [
-			    'onMenuShareTimeline',
-			    'onMenuShareAppMessage',
-			    'onMenuShareQQ',
-			    'onMenuShareWeibo'
-		    ]
-	    });
 
 	    wx.ready(function() {
 		    var thisLink = myconfig({debug:true});
@@ -596,7 +672,8 @@ $signPackage = $jssdk->GetSignPackage();
 
 	window.onload = function(){
 		zhLoadStory.setLogicModal(zhGameLogic);
-		zhLoadStory.setTemplate(zhConfig.storyTpl);
+//		zhLoadStory.setTemplate(zhConfig.storyTpl);
+		zhLoadStory.setConfig(zhConfig);
 		zhLoadStory.init();
 		zhGameLogic.showLastUserResult(lastUser,lastDes,lastImg);
 		$(".zh-restartbtn").click(function(e){

@@ -4,8 +4,10 @@
 
 zhConfig = (function(){
     var me = {};
+    //故事名称
+    me.storyName = 'yure1';
     //模板文件
-    me.storyTpl = "src/story/yure1.html";
+    me.storyTpl = "src/story/"+me.storyName+".html";
     //总结页设定
     me.summaryText = {
         "des":"根据您的战斗表现，我们觉得您的战斗力为:",
