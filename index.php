@@ -155,7 +155,7 @@
 </div>
 
 <!--遮罩层-->
-<div class="zh-overlay-mask">
+<div class="zh-overlay-mask zh-hidden">
 	<div id="zh-modal" class="zh-modal zh-item-modal">
 		<div class="zh-modal-top">
 			<div class="row">
@@ -527,17 +527,21 @@
 		    });
 	    };
 
-	    var findItemInfo = function(itemName){
-		    return _itemPool[itemName];
-	    };
 	    //拾取宝物
 	    var binding_itemOnClick = function(){
 		    $(document).on({
 			    click:function(e){
-				    var _item = findItemInfo($(this).text());
-				    zhItemDialog.open(_item);
+				    pickItem($(this).text());
 			    }
 		    },'.zh-story-text a');
+	    };
+
+	    var pickItem = function(itemName){
+		    var _itemObj = _itemPool[itemName];
+		    if (!_itemObj) {
+			    return false
+		    }
+		    zhItemDialog.open(_itemObj);
 	    };
 		//物品对话框模块
 	    var zhItemDialog = (function(){
