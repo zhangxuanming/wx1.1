@@ -64,7 +64,7 @@
 </head>
 
 <body class="zh-black" ontouchstart="">
-<div class="container" style="overflow: hidden">
+<div class="container" style="overflow-x: hidden">
 <!--	上个用户页面-->
 	<div class="row page pagelastuser full zh-hidden zh-yellow">
 		<div class="col-md-12 full">
