@@ -579,14 +579,14 @@ and (max-device-width: 568px)
 @keyframes m-popup {
     0%{transform: scale(0) rotate(0deg);
     }
-    60%{transform:rotate(0deg);}
+    60%{transform: scale(1.5) rotate(0deg);}
     100%{transform: scale(1);
     }
 }
 @-webkit-keyframes m-popup {
     0%{transform: scale(0) rotate(0deg);
     }
-    60%{rotate(0deg);}
+    60%{transform: scale(1.5) rotate(0deg);}
     100%{transform: scale(1);
     }
 }
