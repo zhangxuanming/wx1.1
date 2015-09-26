@@ -64,7 +64,7 @@
 </head>
 
 <body class="zh-black" ontouchstart="">
-<div class="container">
+<div class="container" style="overflow: hidden">
 <!--	上个用户页面-->
 	<div class="row page pagelastuser full zh-hidden zh-yellow">
 		<div class="col-md-12 full">
@@ -156,7 +156,7 @@
 
 <!--遮罩层-->
 <div class="zh-overlay-mask " style=" overflow:  hidden">
-	<div id="zh-modal" class="zh-modal zh-item-modal" style="-webkit-transform: scale(2)">
+	<div id="zh-modal" class="zh-modal zh-item-modal">
 		<div class="zh-modal-top">
 			<div class="row">
 				<div class="col-xs-10">
