@@ -217,24 +217,36 @@
 			return juicer(tpl,data);
 		};
 
+		//加载剧情，加载游戏模式
 		function ajaxLoadStory(){
-			var storyTpl = {},
-				summaryTpl = {};
+			var  _storyTpl = {}
+				,_itemPoolTpl = {}
+				,_storyObj = {}
+				,_itemPoolObj = {}
+				,_summaryTpl = {};
 			$.get(_config.storyTpl,function(data){
 				if(!data){
+					alert('剧情加载错误。。。:(')
 					return false
 				}
 				var t = $(data);
-				storyTpl = t.filter("#stories").find("section");
-				summaryTpl = t.filter("#summary");//暂时没用
-				templateToJson(storyTpl);
+				_storyTpl   = t.filter("#stories").find("section");
+				_itemPoolTpl  =t.filter("#itemlist").find("section");
+//				_summaryTpl = t.filter("#summary");//暂时没用
 
+				_storyObj = templateToObject(_storyTpl);//分离剧情
+				renderStoryPage(_storyObj);
+
+				_itemPoolObj = templateToItemPoolObject(_itemPoolTpl);//提取物品池模板返回Ojbect
 				//载入游戏逻辑modal
-				_logicModal.init();
+				_logicModal.init({
+					itemPool:_itemPoolObj
+				});
 			});
 		}
 
-		var templateToJson = function(storiesBlock){
+		//渲染剧情页面
+		var templateToObject = function(storiesBlock){
 			//template to object
 			var _imgFolder = _config.storyName+'/';
 			var _itemsInStory = [];
@@ -275,14 +287,35 @@
 				storyObject[i] = st;
 			});
 			_allItemsList = $.unique(_itemsInStory);
-			console.log(_allItemsList);
-			//模板装载页面
-			var html = '';
-			$.each(storyObject,function(i,v){
-				html += randerPage(v);
-			});
-			$(".pagestart").after(html);
+			return storyObject;
 		};
+		//建立物品池
+		var templateToItemPoolObject = function(itemPool){
+			var _itemObejct = {}
+				,_itemName = ''
+				,_itemDes = ''
+				,_itemImg = '';
+			$.each(itemPool,function(i,v){
+				var $v = $(v);
+				_itemName = $.trim($v.attr('data-name'));
+				_itemDes = $.trim($v.find('p').html());
+				_itemObejct[_itemName] = {
+					itemName :_itemName,
+					itemDes  :_itemDes,
+					itemImg  :_itemImg
+				};
+			});
+			return _itemObejct;
+		};
+		//渲染页面
+		var renderStoryPage = function(storyObject){
+			//模板装载页面
+			var _html = '';
+			$.each(storyObject,function(i,v){
+				_html += randerPage(v);
+			});
+			$(".pagestart").after(_html);
+		} ;
 
 		me.init = function() {
 			ajaxLoadStory();
@@ -315,6 +348,7 @@
 
 	    var _lastUserName = null;
 	    var _lastUserDes = null;
+	    var _itemPool   =null;
 
 	    //绑定设定用户得分方法
 	    var setUserScore = function(score){
@@ -349,6 +383,9 @@
 	    //设定上个用户分数
 	    me.setLastUserScore = function(luserDes){
 		    _lastUserDes = luserDes;
+	    };
+	    me.setItemPool = function(itemPool){
+		    _itemPool = itemPool;
 	    };
 
 	    //展示上个玩家页面
@@ -490,33 +527,37 @@
 		    });
 	    };
 
+	    var findItemInfo = function(itemName){
+		    return _itemPool[itemName];
+	    };
 	    //拾取宝物
 	    var binding_itemOnClick = function(){
 		    $(document).on({
 			    click:function(e){
-				    zhItemDialog.open({name:$(this).html(),des:"睡觉啦啦啦啦"});
+				    var _item = findItemInfo($(this).text());
+				    zhItemDialog.open(_item);
 			    }
 		    },'.zh-story-text a');
 	    };
-		//物品对话框
+		//物品对话框模块
 	    var zhItemDialog = (function(){
 			var me =  {};
 		    var  _$modal    = $('.zh-overlay-mask')
 			    ,_$itemName = $('.zh-m-name')
 			    ,_$itemImg  = $('.zh-m-img')
 			    ,_$itemDes  = $('.zh-m-des');
-
+		    //打开对话框
 		    me.open  = function(data){
 			    var _item = data;
-			    if (!_item.name) {
+			    if (!_item.itemName) {
 				    return false
 			    }
-			    _$itemName.html(_item.name);
-			    _$itemDes.html(_item.des);
+			    _$itemName.html(_item.itemName);
+			    _$itemDes.html(_item.itemDes);
 			    if (_item.img) { }//设定图片 暂时没用
 			    _$modal.fadeIn(200);
 		    };
-
+		    //关闭对话框
 		    me.close = function(callback){
 			    var _callback = callback || false;
 			    _$modal.fadeOut(200,_callback);
@@ -531,13 +572,13 @@
 		    });
 	    };
 
+	    //页面跳转
 	    me.goPage = function(pageIndex,animation){
 		    var $pages = $(_opt.page);
 		    var $goPage = $(_opt.page+pageIndex);
 		    $pages.hide();
 		    $goPage.show();
 	    };
-
 
         //重玩
         me.restart = function(){
@@ -550,7 +591,11 @@
         };
 
         //初始化
-        me.init = function(){
+        me.init = function(config){
+	        if (config) {
+		        _itemPool = config.itemPool
+	        }
+	        console.log(_itemPool);
 	        startGame();
 	        showSplash();
 	        bind_jumpAction();
@@ -671,9 +716,8 @@
     });
 
 	window.onload = function(){
-		zhLoadStory.setLogicModal(zhGameLogic);
-//		zhLoadStory.setTemplate(zhConfig.storyTpl);
 		zhLoadStory.setConfig(zhConfig);
+		zhLoadStory.setLogicModal(zhGameLogic);
 		zhLoadStory.init();
 		zhGameLogic.showLastUserResult(lastUser,lastDes,lastImg);
 		$(".zh-restartbtn").click(function(e){
