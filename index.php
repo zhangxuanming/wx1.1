@@ -155,8 +155,8 @@
 </div>
 
 <!--遮罩层-->
-<div class="zh-overlay-mask zh-hidden">
-	<div id="zh-modal" class="zh-modal zh-item-modal">
+<div class="zh-overlay-mask ">
+	<div id="zh-modal" class="zh-modal zh-item-modal" style="-webkit-transform: scale(2)">
 		<div class="zh-modal-top">
 			<div class="row">
 				<div class="col-xs-10">
