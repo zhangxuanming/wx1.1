@@ -160,18 +160,18 @@
 		<div class="zh-modal-top">
 			<div class="row">
 				<div class="col-xs-10">
-					<span class="zh-m-name">宝箱</span>
+					<span class="zh-m-name">看法宝！</span>
 				</div>
 				<div class="col-xs-2">
 					<span class="zh-m-img" style="background: url(./src/img/logo1.jpg) center;background-size: cover"></span>
 				</div>
 				<div class="col-xs-12" style="margin-top: 1em">
-					<p class="zh-m-des" ">传说中晋文公用来盛放马桶的箱子传说中晋文公用来盛放马桶的箱子传说中晋文公用来盛放马桶的箱子</p>
+					<p class="zh-m-des" ">点击文字拾取宝物哟</p>
 				</div>
 			</div>
 		</div>
 		<div class="zh-modal-bottom" style="margin-top: 2em">
-			<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="哇！白捡的">哇！白捡的</button>
+			<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="哇！白捡的">额。。这是啥</button>
 		</div>
 	</div>
 </div>
