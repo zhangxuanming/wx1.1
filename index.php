@@ -26,7 +26,7 @@
 
     <!--模板-->
     <script id="pageTpl" type="text/template">
-        <div class="row page page${id} full zh-hidden zh-read-yellow">
+        <div class="row page page${id} full zh-hidden zh-read-yellow" data-page="${id}">
             <div class="col-md-12 full" style="position: relative;">
                 <div class="row">
                     <div class="col-sm-12 zh-img-block">
@@ -171,7 +171,7 @@
 			</div>
 		</div>
 		<div class="zh-modal-bottom" style="margin-top: 2em">
-			<button class="zh-btn zh-btn-yellow btn-block" style="color:azure" data-modal="close">哇！白捡的</button>
+			<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="哇！白捡的">哇！白捡的</button>
 		</div>
 	</div>
 </div>
@@ -226,7 +226,7 @@
 				,_summaryTpl = {};
 			$.get(_config.storyTpl,function(data){
 				if(!data){
-					alert('剧情加载错误。。。:(')
+					alert('剧情加载错误。。。:(');
 					return false
 				}
 				var t = $(data);
@@ -234,10 +234,12 @@
 				_itemPoolTpl  =t.filter("#itemlist").find("section");
 //				_summaryTpl = t.filter("#summary");//暂时没用
 
-				_storyObj = templateToObject(_storyTpl);//分离剧情
+				//分离剧情
+				_storyObj = templateToObject(_storyTpl);
 				renderStoryPage(_storyObj);
 
-				_itemPoolObj = templateToItemPoolObject(_itemPoolTpl);//提取物品池模板返回Ojbect
+				//提取物品池模板返回Ojbect
+				_itemPoolObj = templateToItemPoolObject(_itemPoolTpl);
 				//载入游戏逻辑modal
 				_logicModal.init({
 					itemPool:_itemPoolObj
@@ -245,7 +247,7 @@
 			});
 		}
 
-		//渲染剧情页面
+		//取得剧情数据转化成object
 		var templateToObject = function(storiesBlock){
 			//template to object
 			var _imgFolder = _config.storyName+'/';
@@ -292,17 +294,30 @@
 		//建立物品池
 		var templateToItemPoolObject = function(itemPool){
 			var _itemObejct = {}
-				,_itemName = ''
-				,_itemDes = ''
-				,_itemImg = '';
+				,_itemName  = ''
+				,_itemDes   = ''
+				,_itemImg   = ''
+				,$btn       = ''
+				,_btn       ='';
 			$.each(itemPool,function(i,v){
 				var $v = $(v);
 				_itemName = $.trim($v.attr('data-name'));
 				_itemDes = $.trim($v.find('p').html());
+				$btn = $v.find('button');
+				if ($btn.length > 0){
+					_btn = {
+						to    : $btn.attr('data-to'),
+						score : $btn.attr('data-score'),
+						txt   : $.trim($btn.html())
+					}
+				} else{
+					_btn = null;
+				}
 				_itemObejct[_itemName] = {
 					itemName :_itemName,
 					itemDes  :_itemDes,
-					itemImg  :_itemImg
+					itemImg  :_itemImg,
+					buttons  :_btn
 				};
 			});
 			return _itemObejct;
@@ -348,8 +363,8 @@
 
 	    var _lastUserName = null;
 	    var _lastUserDes = null;
-	    var _itemPool   =null;
-
+	    var _itemPool   = null;
+	    var _pickedItemPool = {};
 	    //绑定设定用户得分方法
 	    var setUserScore = function(score){
 		    _userScore = score;
@@ -444,28 +459,35 @@
 		    return seffect[Math.floor(Math.random()*seffect.length)];
 	    };
 
-        //剧情页面切换动作调用
+	    //页面跳转
+	    var switchPage = function($btn){
+		    var t = $btn;
+		    var np = $(".page"+ t.attr('data-to')); //next page
+		    var cp = $('.page'+ t.attr('data-from')); //current page
+		    var score = t.attr('data-score');
+		    var tl = new TimelineMax();
+		    var d = 1; //动画时间
+
+		    score = score ? parseInt(score) : 0;
+		    if(cp.selector==np.selector){
+			    return;
+		    }
+		    totalScore += score;
+		    setUserScore(totalScore); //设定用户得分
+		    if (t.attr('data-to') == "end"){
+			    var summaryText = getSummary(totalScore);
+			    setSummary(summaryText);
+			    d = 0;
+		    }
+		    tl.fromTo(cp,0,{alpha:1},{alpha:0,ease:Strong.easeOut,display:'none'})
+			    .fromTo(np,d,animationEffect(),
+			    {alpha:1,scale:1,x:0,y:0,rotationX:0,rotationY:0,ease:Strong.easeOut,display:'block'});
+	    };
+        //剧情页面切换调度
         var bind_jumpAction = function(){
             $(".container").on({
                 click:function(e){
-                    var t = $(this);
-                    var np = $(".page"+ t.attr('data-to')); //next page
-                    var cp = $('.page'+ t.attr('data-from')); //current page
-                    var score = t.attr('data-score');
-                        score = score ? parseInt(score) : 0;
-                    if(cp.selector==np.selector){
-                        return;
-                    }
-                    totalScore += score;
-	                setUserScore(totalScore); //设定用户得分
-                    if (t.attr('data-to') == "end"){
-                        var summaryText = getSummary(totalScore);
-	                    setSummary(summaryText);
-                    }
-	                var tl = new TimelineMax();
-	                tl.fromTo(cp,0,{alpha:1},{alpha:0,ease:Strong.easeOut,display:'none'})
-		                .fromTo(np,1,animationEffect(),
-		                {alpha:1,scale:1,x:0,y:0,rotationX:0,rotationY:0,ease:Strong.easeOut,display:'block'});
+	                switchPage($(this));
                 }
             },".zh-sbtn");
         };
@@ -508,7 +530,7 @@
 				    $(this).hide();
 				    ob.show();
 				    tl.fromTo(ob,0.5,{alpha:0,y:400},{alpha:1,y:0},-0.5);
-				    tl1.staggerFromTo(_btn,1.5,{alpha:0,rotationX:360,y:-100},{alpha:1,rotationX:0,y:0,ease:Back.easeOut},0.2);
+				    tl1.staggerFromTo(_btn,1.5,{alpha:0,y:-100},{alpha:1,rotationX:0,y:0,ease:Back.easeOut},0.2);
 			    }
 		    },'.zh-showoptbtn');
 	    };
@@ -527,37 +549,81 @@
 		    });
 	    };
 
-	    //拾取宝物
+	    //拾取宝物触发
 	    var binding_itemOnClick = function(){
 		    $(document).on({
 			    click:function(e){
-				    pickItem($(this).text());
+				    var _currentPage = $(this).parents('.page').attr('data-page');//取得当前页面
+				    var _itemInfo = pickItemInfo($(this).text(),_currentPage);//取得物品信息
+				    zhItemDialog.open(_itemInfo);
+				    $(this).css({
+					    'background-color':'transparent'
+					    ,'color':'green'
+				    });
 			    }
 		    },'.zh-story-text a');
 	    };
-
-	    var pickItem = function(itemName){
+	    //拾取物品信息方法
+	    var pickItemInfo = function(itemName,pageIndex){
+		    pageIndex = pageIndex || null;
+		    //判定是否拾取过
 		    var _itemObj = _itemPool[itemName];
-		    if (!_itemObj) {
-			    return false
+		    if (!_itemObj) {return false;}
+		    //如果拾取过，只展示，去除button按钮
+		    if (_pickedItemPool[itemName]) {
+			    if (_itemObj.buttons){
+				    _itemObj.buttons = null;
+			    }
+			    return _itemObj;
 		    }
-		    zhItemDialog.open(_itemObj);
+		    _pickedItemPool[itemName] = true;
+		    if (pageIndex && _itemObj.buttons) {
+			    _itemObj.buttons.from = pageIndex;
+		    }
+		    return _itemObj;
 	    };
+
 		//物品对话框模块
 	    var zhItemDialog = (function(){
 			var me =  {};
 		    var  _$modal    = $('.zh-overlay-mask')
 			    ,_$itemName = $('.zh-m-name')
 			    ,_$itemImg  = $('.zh-m-img')
-			    ,_$itemDes  = $('.zh-m-des');
+			    ,_$itemDes  = $('.zh-m-des')
+			    ,_$itemBtn  = $('.zh-m-btn');
+		    //添加按钮
+		    var addButton = function(_itemObj){
+			    var _item = _itemObj;
+			    if (!_itemObj){
+				    return false
+			    }
+			    var _$itemBtn = $($('.zh-sbtn').get(0)).clone();
+			    _$itemBtn.attr('data-from',_item.buttons.from);
+			    _$itemBtn.attr('data-to',_item.buttons.to);
+			    _$itemBtn.attr('data-score',_item.buttons.score);
+			    _$itemBtn.text(_item.buttons.txt);
+			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').last().after(_$itemBtn);
+		    };
 		    //打开对话框
-		    me.open  = function(data){
-			    var _item = data;
+		    me.open  = function(_itemObj){
+			    var _item = _itemObj;
 			    if (!_item.itemName) {
 				    return false
 			    }
 			    _$itemName.html(_item.itemName);
 			    _$itemDes.html(_item.itemDes);
+			    if (_item.buttons){
+				    _$itemBtn.attr('data-from',_item.buttons.from);
+					_$itemBtn.attr('data-to',_item.buttons.to);
+				    _$itemBtn.attr('data-score',_item.buttons.score);
+				    _$itemBtn.text(_item.buttons.txt);
+				    addButton(_item);//添加按钮到下部跳转区
+			    }else{
+				    _$itemBtn.removeAttr('data-from');
+				    _$itemBtn.removeAttr('data-to');
+				    _$itemBtn.removeAttr('data-score');
+				    _$itemBtn.text(_$itemBtn.attr('data-txt'));
+			    }
 			    if (_item.img) { }//设定图片 暂时没用
 			    _$modal.fadeIn(200);
 		    };
@@ -573,6 +639,7 @@
 	    var binding_pl_closeModal = function(){
 		    $("[data-modal=close]").click(function(){
 			    zhItemDialog.close();
+			    switchPage($(this));
 		    });
 	    };
 
@@ -599,7 +666,6 @@
 	        if (config) {
 		        _itemPool = config.itemPool
 	        }
-	        console.log(_itemPool);
 	        startGame();
 	        showSplash();
 	        bind_jumpAction();
