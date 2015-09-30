@@ -170,7 +170,7 @@
 						<p class="zh-m-des" ">点击文字拾取宝物哟</p>
 					</div>
 				</div>
-				<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="哇！白捡的">额。。这是啥</button>
+				<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="嗯，朕知道了">额。。这是啥</button>
 			</div>
 		</div>
 		<div id="zh-modal-noty" class="zh-modal-noty">
@@ -619,8 +619,13 @@
 			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').first().before(_$itemBtn);
 			    _$itemBtn.fadeIn(1000);
 		    };
+
 		    var openNoty = function(notyMsg){
-			    _$notyMsg.html(notyMsg.txt);
+			    var _html = '';
+			    $.each(notyMsg,function(i,v){
+				   _html += "<p>"+v+"</p>";
+			    });
+			    _$notyMsg.html(_html);
 			    _$noty.show();
 		    };
 		    var closeNoty = function(){
@@ -629,7 +634,7 @@
 		    //打开对话框
 		    me.open  = function(_itemObj){
 			    var _item = _itemObj;
-			    var _notyMsg = '';
+			    var _notyMsg = [];
 			    closeNoty();
 			    if (!_item.itemName) {
 				    return false
@@ -640,10 +645,9 @@
 				    _$itemBtn.attr('data-from',_item.buttons.from);
 					_$itemBtn.attr('data-to',_item.buttons.to);
 				    _$itemBtn.attr('data-score',_item.buttons.score);
-				    _$itemBtn.text(_item.buttons.txt);
-				    _notyMsg = {
-					    txt:'获得: ['+_item.buttons.txt+'] 剧情选项'
-				    };
+//				    _$itemBtn.text(_item.buttons.txt);
+				    _$itemBtn.text(_$itemBtn.attr('data-txt'));
+				    _notyMsg.push("获得: [<span>"+_item.buttons.txt+"</span>] 剧情选项");
 				    addButton(_item);//添加按钮到下部跳转区
 				    openNoty(_notyMsg);//处理消息层
 			    }else{

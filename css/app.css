@@ -602,6 +602,9 @@ and (max-device-width: 568px)
     font-size: 1.2em;
     color: #FFCC00 ;
 }
+.zh-noty-content span{
+    color:chartreuse;
+}
 .zh-modal-bottom{
     /*margin-top: 1em;*/
 }
