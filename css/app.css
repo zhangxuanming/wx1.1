@@ -63,7 +63,8 @@ html,body {
     color: #333333;
 }
 .zh-read-yellow{
-    background-color: #ffefaf;
+    /*background-color: #ffefaf;*/
+    background-color: #FFEFA6;
     color: #333333;
 }
 .zh-read-yellow p{
@@ -114,9 +115,9 @@ html,body {
     color: #ffcc00;
 }
 .zh-sbtn{
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.8);
     color: #ffcc00 !important;
-    border: 1px solid #FFCC00;
+    border: 2px solid #FFCC00;
     font-size: 1.4em;
 }
 .zh-btnstart{
@@ -127,11 +128,12 @@ html,body {
 }
 
 .zh-btnblock{
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0,0,0,0.6);
     position: fixed;
     bottom: 0;
     display: none;
     width: 100%;
+    padding: 20px;
 }
 /*点击按钮*/
 .zh-showoptbtn{
@@ -188,7 +190,7 @@ html,body {
     -moz-transition: none;
 }
 .zh-img-block{
-    height: 200px;
+    height: 150px;
     /*margin-bottom: 30px;*/
     overflow-y: hidden;
     padding: 0;
@@ -522,24 +524,29 @@ and (max-device-width: 568px)
 
 /*蒙版层*/
 .zh-overlay-mask{
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0,0,0,0.8);
     z-index: 999;
     position: absolute;
     top:0;left: 0;
     width: 100%;height: 100%;
+}
+#zh-modal-wrap{
+    position: relative;
+    top: 15%;
+    animation: m-popup 0.5s ease;
+    -webkit-animation: m-popup 0.5s ease;
 }
 .zh-modal{
     position: relative;
     background-color: #FFCC00;
     max-width: 80%;
     min-height: 25%;
-    top: 15%;
     margin: 0 auto;
     padding: 1em;
     box-shadow: 1px 1px 12px 2px #333;
     -webkit-box-shadow: 1px 1px 12px 2px #333;
-    animation: m-popup 0.5s ease;
-    -webkit-animation: m-popup 0.5s ease;
+    /*animation: m-popup 0.5s ease;*/
+    /*-webkit-animation: m-popup 0.5s ease;*/
 }
 #zh-modal::before{
     content: "";
@@ -576,6 +583,27 @@ and (max-device-width: 568px)
     float: right;
     height: 45px;
     width: 45px;
+}
+.zh-modal-noty{
+    position: relative;
+    /*background-color: rgba(0,0,0,0.5);*/
+    max-width: 80%;
+    min-width: 80%;
+    min-height: 100px;
+    margin: 0 auto;
+    color: darkorange;
+    padding: 1em;
+}
+.zh-noty-title{
+    font-size: 1.5em;
+    color: darkorange;
+}
+.zh-noty-content{
+    font-size: 1.2em;
+    color: #FFCC00 ;
+}
+.zh-modal-bottom{
+    /*margin-top: 1em;*/
 }
 @keyframes m-popup {
     0%{transform: scale(0) rotate(0deg);

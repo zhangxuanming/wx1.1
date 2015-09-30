@@ -51,11 +51,11 @@
                         <button class="btn center-block btn-block zh-btn zh-showoptbtn zh-black"></button>
                     </div>
                     <div class="col-sm-12 zh-btnblock">
-                        <br>
+
                         {@each actions as item,index}
                             <button data-from="${item.from}" data-to="${item.to}" data-score="${item.score}" class="btn btn-block zh-btn zh-sbtn">${item.txt}</button>
                         {@/each}
-                        <br>
+
                     </div>
                 </div>
             </div>
@@ -155,23 +155,33 @@
 </div>
 
 <!--遮罩层-->
-<div class="zh-overlay-mask " style=" overflow:  hidden">
-	<div id="zh-modal" class="zh-modal zh-item-modal">
-		<div class="zh-modal-top">
-			<div class="row">
-				<div class="col-xs-10">
-					<span class="zh-m-name">看法宝！</span>
+<div class="zh-overlay-mask zh-hidden" style=" overflow:  hidden;">
+	<div id="zh-modal-wrap">
+		<div id="zh-modal" class="zh-modal zh-item-modal">
+			<div class="zh-modal-top">
+				<div class="row">
+					<div class="col-xs-10">
+						<span class="zh-m-name">看法宝！</span>
+					</div>
+					<div class="col-xs-2">
+						<span class="zh-m-img" style="background: url(./src/img/logo1.jpg) center;background-size: cover"></span>
+					</div>
+					<div class="col-xs-12" style="margin-top: 1em">
+						<p class="zh-m-des" ">点击文字拾取宝物哟</p>
+					</div>
 				</div>
-				<div class="col-xs-2">
-					<span class="zh-m-img" style="background: url(./src/img/logo1.jpg) center;background-size: cover"></span>
-				</div>
-				<div class="col-xs-12" style="margin-top: 1em">
-					<p class="zh-m-des" ">点击文字拾取宝物哟</p>
-				</div>
+				<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="哇！白捡的">额。。这是啥</button>
 			</div>
 		</div>
-		<div class="zh-modal-bottom" style="margin-top: 2em">
-			<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="哇！白捡的">额。。这是啥</button>
+		<div id="zh-modal-noty" class="zh-modal-noty">
+			<div class="row">
+				<div class="col-xs-12 zh-noty-title">
+					<p>恭喜!~~~</p>
+				</div>
+				<div class="col-xs-12 zh-noty-content">
+					<p>获得: [吃饭睡觉] 剧情选项</p>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -530,7 +540,7 @@
 				    $(this).hide();
 				    ob.show();
 				    tl.fromTo(ob,0.5,{alpha:0,y:400},{alpha:1,y:0},-0.5);
-				    tl1.staggerFromTo(_btn,1.5,{alpha:0,y:-100},{alpha:1,rotationX:0,y:0,ease:Back.easeOut},0.2);
+				    tl1.staggerFromTo(_btn,1.5,{alpha:0,y:-100},{alpha:1,rotationX:0,y:0,x:0,ease:Back.easeOut},0.2);
 			    }
 		    },'.zh-showoptbtn');
 	    };
@@ -590,7 +600,9 @@
 			    ,_$itemName = $('.zh-m-name')
 			    ,_$itemImg  = $('.zh-m-img')
 			    ,_$itemDes  = $('.zh-m-des')
-			    ,_$itemBtn  = $('.zh-m-btn');
+			    ,_$itemBtn  = $('.zh-m-btn')
+			    ,_$noty     = $('#zh-modal-noty')
+			    ,_$notyMsg  = $('.zh-noty-content');
 		    //添加按钮
 		    var addButton = function(_itemObj){
 			    var _item = _itemObj;
@@ -602,11 +614,23 @@
 			    _$itemBtn.attr('data-to',_item.buttons.to);
 			    _$itemBtn.attr('data-score',_item.buttons.score);
 			    _$itemBtn.text(_item.buttons.txt);
-			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').last().after(_$itemBtn);
+//			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').last().after(_$itemBtn);
+			    _$itemBtn.hide();
+			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').first().before(_$itemBtn);
+			    _$itemBtn.fadeIn(1000);
+		    };
+		    var openNoty = function(notyMsg){
+			    _$notyMsg.html(notyMsg.txt);
+			    _$noty.show();
+		    };
+		    var closeNoty = function(){
+			    _$noty.hide();
 		    };
 		    //打开对话框
 		    me.open  = function(_itemObj){
 			    var _item = _itemObj;
+			    var _notyMsg = '';
+			    closeNoty();
 			    if (!_item.itemName) {
 				    return false
 			    }
@@ -617,7 +641,11 @@
 					_$itemBtn.attr('data-to',_item.buttons.to);
 				    _$itemBtn.attr('data-score',_item.buttons.score);
 				    _$itemBtn.text(_item.buttons.txt);
+				    _notyMsg = {
+					    txt:'获得: ['+_item.buttons.txt+'] 剧情选项'
+				    };
 				    addButton(_item);//添加按钮到下部跳转区
+				    openNoty(_notyMsg);//处理消息层
 			    }else{
 				    _$itemBtn.removeAttr('data-from');
 				    _$itemBtn.removeAttr('data-to');
@@ -639,7 +667,7 @@
 	    var binding_pl_closeModal = function(){
 		    $("[data-modal=close]").click(function(){
 			    zhItemDialog.close();
-			    switchPage($(this));
+//			    switchPage($(this));
 		    });
 	    };
 
