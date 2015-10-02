@@ -100,7 +100,7 @@ html,body {
     border-color: #FFCC00 !important;
 }
 .zh-btn-yellow{
-    background-color: rgba(0,0,0,0.6) !important;
+    background-color: rgba(0,0,0,0.7) !important;
     /*color: #ffcc00 !important;*/
     color: #ffcc00;
     border: 1px solid #FFCC00;
@@ -543,10 +543,10 @@ and (max-device-width: 568px)
     margin: 0 auto;
     padding: 1em;
     box-shadow: 1px 1px 12px 2px #333,inset 0 0 5px #000000;;
-    -webkit-box-shadow: 1px 1px 12px 2px #333,inset 0 0 0 1px rgba(250,0,0,0.6);
+    -webkit-box-shadow: 1px 1px 12px 2px #333,inset 0 0 0 1px rgba(255, 255, 255, 0.8);
     animation: m-popup 0.5s ease;
     -webkit-animation: m-popup 0.5s ease;
-    border:10px solid orange;
+    border:10px solid #FFCC00;
 }
 #zh-modal::before{
     content: "";
@@ -568,14 +568,14 @@ and (max-device-width: 568px)
     background-color: #FFCC00;
     transform: rotate(10deg);
     -webkit-transform: rotate(10deg);
-    border:10px solid orange;
+    border:10px solid #FFCC00;
     z-index: -1;
 }
 .zh-m-name{
     font-size: 2.5em;
-    color:orangered;
-    text-shadow:  1px 1px 0 rgba(0,0,0,0.8);
-    -webkit-text-shadow:1px 1px 0 rgba(0,0,0,0.8);
+    color:tomato;
+    text-shadow:  1px 1px 0 rgba(0,0,0,0.5);
+    -webkit-text-shadow:1px 1px 0 rgba(0,0,0,0.5);
 }
 .zh-m-des{
     font-size: 1.2em;

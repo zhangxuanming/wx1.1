@@ -170,7 +170,7 @@
 						<p class="zh-m-des" ">点击文字拾取宝物哟</p>
 					</div>
 				</div>
-				<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" style="color:azure" data-modal="close" data-txt="嗯，朕知道了">额。。这是啥</button>
+				<button class="zh-btn zh-btn-yellow btn-block zh-m-btn" data-modal="close" data-txt="嗯，朕知道了">额。。这是啥</button>
 			</div>
 		</div>
 		<div id="zh-modal-noty" class="zh-modal-noty">
@@ -646,12 +646,12 @@
 		    var setNotyLayout = function(itemType){
 			    switch (itemType){
 				    case _itemType.display:
-					    _$itemName.css({'color':'slategray'});
+					    _$itemName.css({'color':'azure'});
 //					    _$modal.css({'border-color':'dodgerblue'});
 //					    _$modalAfter.css({'border-color':'dodgerblue'});
 					    break;
 				    case _itemType.option:
-					    _$itemName.css({'color':'orangered'});
+					    _$itemName.css({'color':'tomato'});
 //					    _$modal.css({'border-color':'orange'});
 					    break;
 				    default :
