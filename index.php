@@ -304,6 +304,7 @@
 		//建立物品池
 		var templateToItemPoolObject = function(itemPool){
 			var _itemObejct = {}
+				,_itemRef   = ''
 				,_itemName  = ''
 				,_itemDes   = ''
 				,_itemImg   = ''
@@ -312,6 +313,7 @@
 				,_btn       = '';
 			$.each(itemPool,function(i,v){
 				var $v = $(v);
+				_itemRef = $.trim($v.attr('data-ref')); //情节文字索引
 				_itemName = $.trim($v.attr('data-name'));
 				_itemType = $.trim($v.attr('data-type'));
 				_itemDes = $.trim($v.find('p').html());
@@ -320,12 +322,13 @@
 					_btn = {
 						to    : $btn.attr('data-to'),
 						score : $btn.attr('data-score'),
-						txt   : $.trim($btn.html()),
+						txt   : $.trim($btn.html())
 					}
 				} else{
 					_btn = null;
 				}
-				_itemObejct[_itemName] = {
+				_itemObejct[_itemRef] = {
+					itemRef  : _itemRef,
 					itemName : _itemName,
 					itemDes  : _itemDes,
 					itemImg  : _itemImg,
@@ -376,8 +379,8 @@
 
 	    var _lastUserName = null;
 	    var _lastUserDes = null;
-	    var _itemPool   = null;
-	    var _pickedItemPool = {};
+	    var _itemPool   = null;//物品池
+	    var _pickedItemPool = {};//拾取过的物品记录
 	    //绑定设定用户得分方法
 	    var setUserScore = function(score){
 		    _userScore = score;
@@ -577,19 +580,19 @@
 		    },'.zh-story-text a');
 	    };
 	    //拾取物品信息方法
-	    var pickItemInfo = function(itemName,pageIndex){
+	    var pickItemInfo = function(itemRef,pageIndex){
 		    pageIndex = pageIndex || null;
 		    //判定是否拾取过
-		    var _itemObj = _itemPool[itemName];
+		    var _itemObj = _itemPool[itemRef];
 		    if (!_itemObj) {return false;}
 		    //如果拾取过，只展示，去除button按钮
-		    if (_pickedItemPool[itemName]) {
+		    if (_pickedItemPool[itemRef]) {
 			    if (_itemObj.buttons){
 				    _itemObj.buttons = null;
 			    }
 			    return _itemObj;
 		    }
-		    _pickedItemPool[itemName] = true;
+		    _pickedItemPool[itemRef] = true;//记录拾取过的物品
 		    if (pageIndex && _itemObj.buttons) {
 			    _itemObj.buttons.from = pageIndex;
 		    }
