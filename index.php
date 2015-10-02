@@ -155,7 +155,7 @@
 </div>
 
 <!--遮罩层-->
-<div class="zh-overlay-mask zh-hidden" style=" overflow:  hidden;">
+<div class="zh-overlay-mask" style=" overflow:  hidden;">
 	<div id="zh-modal-wrap">
 		<div id="zh-modal" class="zh-modal zh-item-modal">
 			<div class="zh-modal-top">
@@ -176,10 +176,10 @@
 		<div id="zh-modal-noty" class="zh-modal-noty">
 			<div class="row">
 				<div class="col-xs-12 zh-noty-title">
-					<p>恭喜!~~~</p>
+					<p>君上威武！</p>
 				</div>
 				<div class="col-xs-12 zh-noty-content">
-					<p>获得: [吃饭睡觉] 剧情选项</p>
+					<p>获得: [<span>吃饭睡觉</span>] 剧情选项</p>
 				</div>
 			</div>
 		</div>
@@ -307,27 +307,30 @@
 				,_itemName  = ''
 				,_itemDes   = ''
 				,_itemImg   = ''
+				,_itemType  = ''
 				,$btn       = ''
-				,_btn       ='';
+				,_btn       = '';
 			$.each(itemPool,function(i,v){
 				var $v = $(v);
 				_itemName = $.trim($v.attr('data-name'));
+				_itemType = $.trim($v.attr('data-type'));
 				_itemDes = $.trim($v.find('p').html());
 				$btn = $v.find('button');
 				if ($btn.length > 0){
 					_btn = {
 						to    : $btn.attr('data-to'),
 						score : $btn.attr('data-score'),
-						txt   : $.trim($btn.html())
+						txt   : $.trim($btn.html()),
 					}
 				} else{
 					_btn = null;
 				}
 				_itemObejct[_itemName] = {
-					itemName :_itemName,
-					itemDes  :_itemDes,
-					itemImg  :_itemImg,
-					buttons  :_btn
+					itemName : _itemName,
+					itemDes  : _itemDes,
+					itemImg  : _itemImg,
+					itemType : _itemType,
+					buttons  : _btn
 				};
 			});
 			return _itemObejct;
@@ -568,7 +571,7 @@
 				    zhItemDialog.open(_itemInfo);
 				    $(this).css({
 					    'background-color':'transparent'
-					    ,'color':'green'
+					    ,'color':'orangered'
 				    });
 			    }
 		    },'.zh-story-text a');
@@ -596,13 +599,19 @@
 		//物品对话框模块
 	    var zhItemDialog = (function(){
 			var me =  {};
-		    var  _$modal    = $('.zh-overlay-mask')
+		    var  _$modalMask    = $('.zh-overlay-mask')
+			    ,_$modal    = $('#zh-modal')
+			    ,_$modalAfter    = $("#zh-modal:after")
 			    ,_$itemName = $('.zh-m-name')
 			    ,_$itemImg  = $('.zh-m-img')
 			    ,_$itemDes  = $('.zh-m-des')
 			    ,_$itemBtn  = $('.zh-m-btn')
-			    ,_$noty     = $('#zh-modal-noty')
+			    ,_$noty     = $('#zh-modal-noty')//获取物品提示层
 			    ,_$notyMsg  = $('.zh-noty-content');
+		    var _itemType = {
+			    display :'display',
+			    option  : 'option'
+		    };
 		    //添加按钮
 		    var addButton = function(_itemObj){
 			    var _item = _itemObj;
@@ -614,13 +623,13 @@
 			    _$itemBtn.attr('data-to',_item.buttons.to);
 			    _$itemBtn.attr('data-score',_item.buttons.score);
 			    _$itemBtn.text(_item.buttons.txt);
-//			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').last().after(_$itemBtn);
 			    _$itemBtn.hide();
 			    $('.page'+_item.buttons.from).find('.zh-btnblock').find('.zh-sbtn').first().before(_$itemBtn);
 			    _$itemBtn.fadeIn(1000);
 		    };
 
-		    var openNoty = function(notyMsg){
+		    //获得奖励的信息
+		    var showNoty = function(notyMsg){
 			    var _html = '';
 			    $.each(notyMsg,function(i,v){
 				   _html += "<p>"+v+"</p>";
@@ -631,11 +640,27 @@
 		    var closeNoty = function(){
 			    _$noty.hide();
 		    };
+		    var setNotyLayout = function(itemType){
+			    switch (itemType){
+				    case _itemType.display:
+					    _$itemName.css({'color':'slategray'});
+//					    _$modal.css({'border-color':'dodgerblue'});
+//					    _$modalAfter.css({'border-color':'dodgerblue'});
+					    break;
+				    case _itemType.option:
+					    _$itemName.css({'color':'orangered'});
+//					    _$modal.css({'border-color':'orange'});
+					    break;
+				    default :
+			    }
+		    }
 		    //打开对话框
 		    me.open  = function(_itemObj){
 			    var _item = _itemObj;
 			    var _notyMsg = [];
 			    closeNoty();
+			    setNotyLayout(_item.itemType);
+
 			    if (!_item.itemName) {
 				    return false
 			    }
@@ -645,11 +670,10 @@
 				    _$itemBtn.attr('data-from',_item.buttons.from);
 					_$itemBtn.attr('data-to',_item.buttons.to);
 				    _$itemBtn.attr('data-score',_item.buttons.score);
-//				    _$itemBtn.text(_item.buttons.txt);
 				    _$itemBtn.text(_$itemBtn.attr('data-txt'));
 				    _notyMsg.push("获得: [<span>"+_item.buttons.txt+"</span>] 剧情选项");
 				    addButton(_item);//添加按钮到下部跳转区
-				    openNoty(_notyMsg);//处理消息层
+				    showNoty(_notyMsg);//处理消息层
 			    }else{
 				    _$itemBtn.removeAttr('data-from');
 				    _$itemBtn.removeAttr('data-to');
@@ -657,12 +681,12 @@
 				    _$itemBtn.text(_$itemBtn.attr('data-txt'));
 			    }
 			    if (_item.img) { }//设定图片 暂时没用
-			    _$modal.fadeIn(200);
+			    _$modalMask.fadeIn(200);
 		    };
 		    //关闭对话框
 		    me.close = function(callback){
 			    var _callback = callback || false;
-			    _$modal.fadeOut(200,_callback);
+			    _$modalMask.fadeOut(200,_callback);
 		    };
 		    return me;
 	    }());
